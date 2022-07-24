@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import sys
+import os
 
 next_page=''
 chrome_driver_path = Service(r"C:\Users\KIIT\Desktop\python_code\my_python_code\selenium\chromedriver.exe")
@@ -22,7 +23,7 @@ def scrape_amazon(max_pages):
         driver.get(next_page)
         driver.implicitly_wait(5)
         page_number += 1
-
+    driver.quit()
 # task 1
 def scrape_page(driver):
     product_link = []
@@ -70,14 +71,8 @@ def scrape_page(driver):
 
     [product_link,product_description,Manufacturer]=another_page(driver,product_link,product_description,Manufacturer)
 
-    #delete this and change to csv
-    print(len(product_link))
-    print("\n")
     
-    print(len(product_description))
-    print("\n")
-    print(len(Manufacturer))
-    print("\n")
+
     
     df = pd.DataFrame({'link': product_link,
                    'name': product_name,
@@ -87,7 +82,8 @@ def scrape_page(driver):
                    'asin': product_asin,
                    'description': product_description,
                    'manufacturer': Manufacturer})
-    df.to_csv('amazon_data.csv')
+    output_path='amazon_data.csv'
+    df.to_csv('amazon_data.csv',mode='a',header=not os.path.exists(output_path))
     global next_page
     next_page = driver.find_element(By.XPATH,'//a[@class ="s-pagination-item s-pagination-next s-pagination-button s-pagination-separator"]').get_attribute("href")
 
